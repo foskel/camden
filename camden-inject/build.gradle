@@ -1,0 +1,9 @@
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'javax.inject:javax.inject:1'
+}

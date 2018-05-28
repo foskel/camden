@@ -1,0 +1,12 @@
+version '0.1.0-RELEASE'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+
+    compile project(':camden-core')
+    compile 'com.google.code.gson:gson:2.8.5'
+}

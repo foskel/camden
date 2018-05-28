@@ -1,0 +1,10 @@
+version '0.1.0-RELEASE'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(':camden-guice')
+    compile 'com.google.code.gson:gson:2.8.5'
+}

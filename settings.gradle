@@ -1,0 +1,8 @@
+rootProject.name = 'camden'
+
+include 'camden-core'
+include 'camden-inject'
+include 'camden-gson'
+include 'camden-guice'
+include 'camden-guice-gson'
+

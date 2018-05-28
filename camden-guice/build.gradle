@@ -1,0 +1,12 @@
+version '0.1.0-RELEASE'
+
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(':camden-inject')
+    compile 'com.google.inject:guice:4.2.0'
+}
