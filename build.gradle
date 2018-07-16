@@ -1,6 +1,7 @@
-group 'com.github.foskel.camden'
-
 subprojects {
+    group 'com.github.foskel.camden'
+    version '0.1.0-RELEASE'
+
     apply plugin: 'java'
 
     tasks.withType(JavaCompile) {
@@ -8,6 +9,4 @@ subprojects {
         targetCompatibility = 1.8
         options.encoding = 'UTF-8'
     }
-
-    group 'com.github.foskel.camden'
 }

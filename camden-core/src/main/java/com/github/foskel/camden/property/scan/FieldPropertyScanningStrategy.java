@@ -1,8 +1,8 @@
 package com.github.foskel.camden.property.scan;
 
 import com.github.foskel.camden.property.Property;
-import com.github.foskel.camden.property.annotations.Exclude;
-import com.github.foskel.camden.property.annotations.Propertied;
+import com.github.foskel.camden.annotations.Exclude;
+import com.github.foskel.camden.annotations.Propertied;
 
 import java.lang.reflect.Field;
 import java.util.*;
