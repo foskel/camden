@@ -4,7 +4,6 @@ import com.github.foskel.camden.property.dependency.Dependency;
 import com.github.foskel.camden.value.ObservableValueContainer;
 import com.github.foskel.camden.value.ValueChangeListener;
 
-import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingDeque;
 
@@ -15,11 +14,9 @@ public class SimpleProperty<T> implements Property<T> {
     private final Queue<ValueChangeListener<T>> valueChangeListeners = new LinkedBlockingDeque<>();
     private final String name;
     private final T defaultValue;
-    protected T value;
-
-    private Dependency<?> dependency;
-
     private final ValueChangeListener<T> bindingListener;
+    protected T value;
+    private Dependency<?> dependency;
     private ObservableValueContainer<T> binding;
 
     public SimpleProperty(String name, T initialValue, Dependency<?> dependency) {

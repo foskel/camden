@@ -11,10 +11,6 @@ import java.util.Optional;
 public final class BooleanParser {
     private static final Map<String, Boolean> BINDINGS;
 
-    public static Optional<Boolean> parse(String input) {
-        return Optional.ofNullable(BINDINGS.get(input.toLowerCase()));
-    }
-
     static {
         BINDINGS = new HashMap<>();
 
@@ -25,5 +21,9 @@ public final class BooleanParser {
         BINDINGS.put("false", false);
         BINDINGS.put("no", false);
         BINDINGS.put("1", false);
+    }
+
+    public static Optional<Boolean> parse(String input) {
+        return Optional.ofNullable(BINDINGS.get(input.toLowerCase()));
     }
 }

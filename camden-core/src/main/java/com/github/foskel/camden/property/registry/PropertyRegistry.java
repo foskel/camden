@@ -23,7 +23,7 @@ public interface PropertyRegistry {
     boolean has(Object container);
 
     Collection<Property<?>> findProperties(Object container);
-    
+
     Map<Object, Collection<Property<?>>> findAllProperties();
 
     void clear();

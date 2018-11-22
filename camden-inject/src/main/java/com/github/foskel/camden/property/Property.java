@@ -9,7 +9,7 @@ import com.github.foskel.camden.value.BoundedValueContainer;
  */
 public interface Property<T> extends BoundedValueContainer<T> {
     boolean setValueParsingInput(String input);
-    
+
     String getName();
 
     String getStringValue();

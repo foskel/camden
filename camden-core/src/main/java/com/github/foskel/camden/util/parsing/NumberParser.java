@@ -9,16 +9,6 @@ import java.util.function.Function;
 public final class NumberParser {
     private static final Map<Class<? extends Number>, Function<Number, Number>> BINDINGS;
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Number> T parse(String input, Class<T> type) {
-        double fromInput = Double.parseDouble(input);
-
-        Class<T> wrappedType = (Class<T>) PrimitiveWrapper.INSTANCE.get(type);
-        Function<Number, Number> parsedResult = BINDINGS.get(wrappedType);
-
-        return (T) parsedResult.apply(fromInput);
-    }
-
     static {
         BINDINGS = new HashMap<>();
 
@@ -28,5 +18,15 @@ public final class NumberParser {
         BINDINGS.put(Double.class, Number::doubleValue);
         BINDINGS.put(Byte.class, Number::byteValue);
         BINDINGS.put(Short.class, Number::shortValue);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Number> T parse(String input, Class<T> type) {
+        double fromInput = Double.parseDouble(input);
+
+        Class<T> wrappedType = (Class<T>) PrimitiveWrapper.INSTANCE.get(type);
+        Function<Number, Number> parsedResult = BINDINGS.get(wrappedType);
+
+        return (T) parsedResult.apply(fromInput);
     }
 }

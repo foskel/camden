@@ -8,14 +8,6 @@ public enum PrimitiveWrapper {
 
     private static final Map<Class<?>, Class<?>> WRAPPEDS;
 
-    public Class<?> get(Class<?> unwrapped) {
-        Class<?> candidate = WRAPPEDS.get(unwrapped);
-
-        return candidate == null
-                ? unwrapped
-                : candidate;//Optional.ofNullable(candidate).orElse(unwrapped);
-    }
-
     static {
         WRAPPEDS = new HashMap<>();
 
@@ -28,5 +20,13 @@ public enum PrimitiveWrapper {
         WRAPPEDS.put(Float.TYPE, Float.class);
         WRAPPEDS.put(Double.TYPE, Double.class);
         WRAPPEDS.put(Void.TYPE, Void.class);
+    }
+
+    public Class<?> get(Class<?> unwrapped) {
+        Class<?> candidate = WRAPPEDS.get(unwrapped);
+
+        return candidate == null
+                ? unwrapped
+                : candidate;//Optional.ofNullable(candidate).orElse(unwrapped);
     }
 }

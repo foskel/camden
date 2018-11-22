@@ -15,24 +15,6 @@ import java.util.*;
 public enum FieldPropertyScanningStrategy implements PropertyScanningStrategy {
     INSTANCE;
 
-    @Override
-    public Collection<Property<?>> scan(Object source) {
-        if (!shouldScan(source)) {
-            return Collections.emptyList();
-        }
-
-        Class<?> sourceType = source.getClass();
-        Set<Property<?>> properties = new HashSet<>();
-
-        if (sourceType.isAnnotationPresent(Propertied.class)) {
-            properties.addAll(extractProperties(source));
-        }
-
-        properties.addAll(extractPropertiesOfFields(source));
-
-        return Collections.unmodifiableSet(properties);
-    }
-
     private static List<Property<?>> extractPropertiesOfFields(Object parentSource) {
         List<Object> fieldValues = getPropertyFieldsValues(parentSource);
         List<Property<?>> properties = extractAllProperties(fieldValues);
@@ -137,5 +119,23 @@ public enum FieldPropertyScanningStrategy implements PropertyScanningStrategy {
         }
 
         return false;
+    }
+
+    @Override
+    public Collection<Property<?>> scan(Object source) {
+        if (!shouldScan(source)) {
+            return Collections.emptyList();
+        }
+
+        Class<?> sourceType = source.getClass();
+        Set<Property<?>> properties = new HashSet<>();
+
+        if (sourceType.isAnnotationPresent(Propertied.class)) {
+            properties.addAll(extractProperties(source));
+        }
+
+        properties.addAll(extractPropertiesOfFields(source));
+
+        return Collections.unmodifiableSet(properties);
     }
 }

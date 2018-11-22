@@ -61,7 +61,7 @@ public final class StandardPropertyRegistry implements PropertyRegistry {
                 return false;
             }
         }
-        
+
         return true;
     }
 

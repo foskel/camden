@@ -25,6 +25,29 @@ public final class JsonPropertyReader implements PropertyReader {
         this.propertyManager = propertyManager;
     }
 
+    //TODO: Replace with Gson deserializer?
+    private static Optional<JsonElement> getJsonElement(Path source) {
+        Objects.requireNonNull(source, "source");
+
+        if (Files.notExists(source) || Files.isDirectory(source)) {
+            return Optional.empty();
+        }
+
+        FileReader reader;
+
+        try {
+            reader = new FileReader(source.toFile());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+
+            return Optional.empty();
+        }
+
+        JsonElement root = new JsonParser().parse(reader);
+
+        return Optional.of(root);
+    }
+
     @Override
     public void read(Object container, Path source) {
         Optional<JsonElement> elementResult = getJsonElement(source);
@@ -58,28 +81,5 @@ public final class JsonPropertyReader implements PropertyReader {
 
             property.setValueParsingInput(entry.getValue().getAsString());
         }
-    }
-
-    //TODO: Replace with Gson deserializer?
-    private static Optional<JsonElement> getJsonElement(Path source) {
-        Objects.requireNonNull(source, "source");
-
-        if (Files.notExists(source) || Files.isDirectory(source)) {
-            return Optional.empty();
-        }
-
-        FileReader reader;
-
-        try {
-            reader = new FileReader(source.toFile());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-
-            return Optional.empty();
-        }
-
-        JsonElement root = new JsonParser().parse(reader);
-
-        return Optional.of(root);
     }
 }
