@@ -10,7 +10,7 @@ public final class SelectablePropertyBuilder<T> {
     private final Set<T> options = new HashSet<>();
     private final String name;
     private Function<T, String> nameSupplier;
-    private InputMatchType matchType = InputMatchType.EQUALITY;
+    private InputMatchType matchType = InputMatchType.EQUALS;
     private T defaultValue;
 
     public SelectablePropertyBuilder(String name) {

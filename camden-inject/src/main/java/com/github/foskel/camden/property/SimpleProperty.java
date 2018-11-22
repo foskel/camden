@@ -4,14 +4,13 @@ import com.github.foskel.camden.property.dependency.Dependency;
 import com.github.foskel.camden.value.ObservableValueContainer;
 import com.github.foskel.camden.value.ValueChangeListener;
 
-import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * Abstract implementation of {@link Property}
  */
-public abstract class AbstractProperty<T> implements Property<T> {
+public class SimpleProperty<T> implements Property<T> {
     private final Queue<ValueChangeListener<T>> valueChangeListeners = new LinkedBlockingDeque<>();
     private final String name;
     private final T defaultValue;
@@ -22,17 +21,16 @@ public abstract class AbstractProperty<T> implements Property<T> {
     private final ValueChangeListener<T> bindingListener;
     private ObservableValueContainer<T> binding;
 
-    public AbstractProperty(String name, T initialValue, Dependency<?> dependency) {
+    public SimpleProperty(String name, T initialValue, Dependency<?> dependency) {
         this(name, initialValue);
 
         this.dependency = dependency;
     }
 
-    public AbstractProperty(String name, T initialValue) {
+    public SimpleProperty(String name, T initialValue) {
         this.name = name;
         this.value = initialValue;
         this.defaultValue = initialValue;
-
         this.bindingListener = (oldValue, newValue) -> this.setValue(newValue);
     }
 
@@ -72,6 +70,11 @@ public abstract class AbstractProperty<T> implements Property<T> {
 
         this.clearListeners();
         this.unbind();
+    }
+
+    @Override
+    public boolean setValueParsingInput(String input) {
+        return false;
     }
 
     @Override
@@ -127,18 +130,12 @@ public abstract class AbstractProperty<T> implements Property<T> {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "{" +
-                (this.name == null
-                        ? "<null>"
-                        : Objects.toString(this.name) + "[" + this.name + "]") + "," +
-                (this.defaultValue == null
-                        ? "<null>"
-                        : Objects.toString(this.defaultValue) + "[" + this.defaultValue + "]") + "," +
-                (this.value == null
-                        ? "<null>"
-                        : Objects.toString(this.value) + "[" + this.value + "]") + "," +
-                Objects.toString(this.valueChangeListeners) + "[" + this.valueChangeListeners + "]" +
-                "}";
+        return getClass().getName() + "{name=" + this.name +
+                ", defaultValue=" + this.defaultValue +
+                ", value=" + this.value +
+                ", binding=" + this.binding +
+                ", dependency=" + this.dependency +
+                ", changeListeners=" + this.valueChangeListeners + "}";
     }
 
     @Override
@@ -153,7 +150,7 @@ public abstract class AbstractProperty<T> implements Property<T> {
 
         Property otherProperty = (Property) obj;
 
-        return Objects.equals(otherProperty.getName(), this.name);
+        return otherProperty.getName().equals(this.name) && otherProperty.getValue().equals(this.value);
         //&& Objects.equals(otherProperty.getDefaultValue(), this.defaultValue)
         //&& Objects.equals(otherProperty.getValue(), this.value);
     }
@@ -163,6 +160,7 @@ public abstract class AbstractProperty<T> implements Property<T> {
         int hash = 1;
 
         hash = 31 * hash + this.name.hashCode();
+        hash = 31 * hash + this.value.hashCode();
         //hash = 31 * hash + this.defaultValue.hashCode();
         //hash = 31 * hash + this.value.hashCode();
 

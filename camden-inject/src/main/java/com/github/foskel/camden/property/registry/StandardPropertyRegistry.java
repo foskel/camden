@@ -56,9 +56,13 @@ public final class StandardPropertyRegistry implements PropertyRegistry {
     public boolean unregisterIf(Predicate<Property<?>> condition) {
         Objects.requireNonNull(condition, "condition");
 
-        return this.properties.values()
-                .stream()
-                .allMatch(properties -> properties.removeIf(condition));
+        for (Collection<Property<?>> propertyCollection : this.properties.values()) {
+            if (!propertyCollection.removeIf(condition)) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 
     @Override
