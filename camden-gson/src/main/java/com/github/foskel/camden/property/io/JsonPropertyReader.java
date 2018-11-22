@@ -1,8 +1,7 @@
 package com.github.foskel.camden.property.io;
 
 import com.github.foskel.camden.property.Property;
-import com.github.foskel.camden.property.PropertyManager;
-import com.github.foskel.camden.property.locate.PropertyLocatorService;
+import com.github.foskel.camden.property.registry.PropertyRegistry;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -17,10 +16,10 @@ import java.util.Objects;
 import java.util.Optional;
 
 public final class JsonPropertyReader implements PropertyReader {
-    private final PropertyManager propertyManager;
+    private final PropertyRegistry propertyRegistry;
 
-    public JsonPropertyReader(PropertyManager propertyManager) {
-        this.propertyManager = propertyManager;
+    public JsonPropertyReader(PropertyRegistry propertyRegistry) {
+        this.propertyRegistry = propertyRegistry;
     }
 
     //TODO: Replace with Gson deserializer?
@@ -66,16 +65,13 @@ public final class JsonPropertyReader implements PropertyReader {
         while (entryIterator.hasNext()) {
             Map.Entry<String, JsonElement> entry = entryIterator.next();
             String propertyIdentifier = entry.getKey();
-            PropertyLocatorService propertyLocator = this.propertyManager.getLocator();
-            Optional<Property<?>> propertyResult = propertyLocator.findProperty(container, propertyIdentifier);
+            Property<?> property = propertyRegistry.findProperty(container, propertyIdentifier);
 
-            if (!propertyResult.isPresent()) {
+            if (property == null) {
                 entryIterator.remove();
 
                 return;
             }
-
-            Property property = propertyResult.get();
 
             property.setValueParsingInput(entry.getValue().getAsString());
         }

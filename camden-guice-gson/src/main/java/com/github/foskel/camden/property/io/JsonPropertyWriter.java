@@ -1,7 +1,7 @@
 package com.github.foskel.camden.property.io;
 
 import com.github.foskel.camden.property.Property;
-import com.github.foskel.camden.property.PropertyManager;
+import com.github.foskel.camden.property.registry.PropertyRegistry;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -16,17 +16,17 @@ public final class JsonPropertyWriter implements PropertyWriter {
     private final Gson gson = new GsonBuilder()
             .setPrettyPrinting()
             .create();
-    private final PropertyManager propertyManager;
+    private final PropertyRegistry propertyRegistry;
 
     @Inject
-    JsonPropertyWriter(PropertyManager propertyManager) {
-        this.propertyManager = propertyManager;
+    JsonPropertyWriter(PropertyRegistry propertyRegistry) {
+        this.propertyRegistry = propertyRegistry;
     }
 
     @Override
     public void write(Object container, Path destination) throws IOException {
         JsonObject root = new JsonObject();
-        Collection<Property<?>> properties = this.propertyManager.findProperties(container);
+        Collection<Property<?>> properties = this.propertyRegistry.findProperties(container);
 
         properties.forEach(property -> root.addProperty(property.getName(), property.getStringValue()));
 

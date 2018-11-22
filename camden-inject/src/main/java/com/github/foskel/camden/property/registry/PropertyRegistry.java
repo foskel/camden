@@ -22,6 +22,8 @@ public interface PropertyRegistry {
 
     boolean has(Object container);
 
+    Property<?> findProperty(Object container, String name);
+
     Collection<Property<?>> findProperties(Object container);
 
     Map<Object, Collection<Property<?>>> findAllProperties();

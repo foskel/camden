@@ -71,6 +71,23 @@ public final class StandardPropertyRegistry implements PropertyRegistry {
     }
 
     @Override
+    public Property<?> findProperty(Object container, String name) {
+        Collection<Property<?>> properties = this.properties.get(container);
+
+        if (properties == null) {
+            return null;
+        }
+
+        for (Property<?> property : properties) {
+            if (property.getName().equals(name)) {
+                return property;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
     public Collection<Property<?>> findProperties(Object container) {
         return this.properties.get(container);
     }
