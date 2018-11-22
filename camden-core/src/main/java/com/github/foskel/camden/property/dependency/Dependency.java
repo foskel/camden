@@ -2,24 +2,22 @@ package com.github.foskel.camden.property.dependency;
 
 import com.github.foskel.camden.property.Property;
 
+import java.util.function.Predicate;
+
 public final class Dependency<T extends Property<?>> {
     private final T target;
-    private final DependencyFilter<T> filter;
+    private final Predicate<T> filter;
 
-    private Dependency(T target, DependencyFilter<T> filter) {
+    private Dependency(T target, Predicate<T> filter) {
         this.target = target;
         this.filter = filter;
-    }
-
-    public static <T extends Property<?>> Dependency<T> of(T target, DependencyFilter<T> filter) {
-        return new Dependency<>(target, filter);
     }
 
     public Property<?> getTarget() {
         return this.target;
     }
 
-    public DependencyFilter<?> getFilter() {
+    public Predicate<T> getFilter() {
         return this.filter;
     }
 

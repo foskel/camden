@@ -1,6 +1,6 @@
 package com.github.foskel.camden.property.properties;
 
-import com.github.foskel.camden.property.AbstractProperty;
+import com.github.foskel.camden.property.SimpleProperty;
 import com.github.foskel.camden.util.parsing.BooleanParser;
 
 import java.util.Optional;
@@ -9,7 +9,7 @@ import java.util.Optional;
  * @author Fred
  * @since 2/21/2017
  */
-public final class BooleanProperty extends AbstractProperty<Boolean> {
+public final class BooleanProperty extends SimpleProperty<Boolean> {
     public BooleanProperty(String name, Boolean value) {
         super(name, value);
     }

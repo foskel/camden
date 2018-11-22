@@ -1,8 +1,8 @@
 package com.github.foskel.camden.property.properties.selectable;
 
 public enum InputMatchType {
-    EQUALITY,
-    CASE_INSENSITIVE_EQUALITY,
+    EQUALS,
+    EQUALS_CASE_INSENSITIVE,
     STARTS_WITH_CASE_SENSITIVE,
     STARTS_WITH
 }

@@ -1,6 +1,6 @@
 package com.github.foskel.camden.property.properties.selectable;
 
-import com.github.foskel.camden.property.AbstractProperty;
+import com.github.foskel.camden.property.SimpleProperty;
 import com.github.foskel.camden.util.Strings;
 
 import java.util.Collections;
@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public final class SelectableProperty<T> extends AbstractProperty<T> {
+public final class SelectableProperty<T> extends SimpleProperty<T> {
     private final Set<T> options;
     private final Function<T, String> nameSupplier;
     private final InputMatchType matchType;
@@ -48,7 +48,7 @@ public final class SelectableProperty<T> extends AbstractProperty<T> {
 
     public Optional<T> find(String optionName) {
         return this.options.stream()
-                .filter(this.filterByMatchType(optionName, InputMatchType.EQUALITY))
+                .filter(this.filterByMatchType(optionName, InputMatchType.EQUALS))
                 .findFirst();
     }
 
@@ -62,9 +62,9 @@ public final class SelectableProperty<T> extends AbstractProperty<T> {
 
     private Predicate<T> filterByMatchType(String input, InputMatchType matchType) {
         switch (matchType) {
-            case EQUALITY:
+            case EQUALS:
                 return option -> this.getName(option).equals(input);
-            case CASE_INSENSITIVE_EQUALITY:
+            case EQUALS_CASE_INSENSITIVE:
                 return option -> this.getName(option).equalsIgnoreCase(input);
             case STARTS_WITH_CASE_SENSITIVE:
                 return option -> this.getName(option).startsWith(input);

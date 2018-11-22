@@ -1,6 +1,6 @@
 package com.github.foskel.camden.property.properties.number;
 
-import com.github.foskel.camden.property.AbstractProperty;
+import com.github.foskel.camden.property.SimpleProperty;
 import com.github.foskel.camden.util.parsing.NumberParser;
 
 /**
@@ -8,7 +8,7 @@ import com.github.foskel.camden.util.parsing.NumberParser;
  * @since 2/21/2017
  */
 
-public final class NumberProperty<T extends Number & Comparable<T>> extends AbstractProperty<T> implements Comparable<NumberProperty<T>> {
+public final class NumberProperty<T extends Number & Comparable<T>> extends SimpleProperty<T> implements Comparable<NumberProperty<T>> {
     private T minimumValue;
     private T maximalValue;
 
