@@ -76,4 +76,9 @@ public final class JsonPropertyReader implements PropertyReader {
             property.setValueParsingInput(entry.getValue().getAsString());
         }
     }
+
+    @Override
+    public String getFileExtension() {
+        return "json";
+    }
 }
