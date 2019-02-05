@@ -9,6 +9,7 @@ import com.github.foskel.camden.property.scan.PropertyScanningStrategy;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
+import com.google.inject.name.Names;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,14 +17,16 @@ import java.util.List;
 public final class PropertiesModule extends AbstractModule {
     private final List<Class<? extends PropertyReader>> readerTypes;
     private final List<Class<? extends PropertyWriter>> writerTypes;
+    private final Class<? extends PropertyWriter> defaultWriter;
 
-    public PropertiesModule(List<Class<? extends PropertyReader>> readerTypes, List<Class<? extends PropertyWriter>> writerTypes) {
+    public PropertiesModule(List<Class<? extends PropertyReader>> readerTypes, List<Class<? extends PropertyWriter>> writerTypes, Class<? extends PropertyWriter> defaultWriter) {
         this.readerTypes = readerTypes;
         this.writerTypes = writerTypes;
+        this.defaultWriter = defaultWriter;
     }
 
     public PropertiesModule() {
-        this(Collections.emptyList(), Collections.emptyList());
+        this(Collections.emptyList(), Collections.emptyList(), null);
     }
 
     @Override
@@ -39,20 +42,28 @@ public final class PropertiesModule extends AbstractModule {
     }
 
     private void bindReaders() {
-        Multibinder<PropertyReader> readersMultibinder = Multibinder.newSetBinder(binder(),
-                PropertyReader.class);
+        if (!this.readerTypes.isEmpty()) {
+            Multibinder<PropertyReader> readersMultibinder = Multibinder.newSetBinder(binder(),
+                    PropertyReader.class);
 
-        for (Class<? extends PropertyReader> readerType : readerTypes) {
-            readersMultibinder.addBinding().to(readerType);
+            for (Class<? extends PropertyReader> readerType : readerTypes) {
+                readersMultibinder.addBinding().to(readerType);
+            }
         }
     }
 
     private void bindWriters() {
-        Multibinder<PropertyWriter> writersMultibinder = Multibinder.newSetBinder(binder(),
-                PropertyWriter.class);
+        if (this.defaultWriter != null) {
+            this.bind(PropertyWriter.class).to(defaultWriter);
+        }
 
-        for (Class<? extends PropertyWriter> writerType : writerTypes) {
-            writersMultibinder.addBinding().to(writerType);
+        if (!this.writerTypes.isEmpty()) {
+            Multibinder<PropertyWriter> writersMultibinder = Multibinder.newSetBinder(binder(),
+                    PropertyWriter.class);
+
+            for (Class<? extends PropertyWriter> writerType : writerTypes) {
+                writersMultibinder.addBinding().to(writerType);
+            }
         }
     }
 }
