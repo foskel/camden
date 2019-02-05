@@ -5,4 +5,6 @@ import java.nio.file.Path;
 
 public interface PropertyReader {
     void read(Object container, Path source) throws IOException;
+
+    String getFileExtension();
 }

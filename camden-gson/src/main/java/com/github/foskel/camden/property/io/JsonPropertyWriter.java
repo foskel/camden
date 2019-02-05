@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -28,6 +29,6 @@ public final class JsonPropertyWriter implements PropertyWriter {
 
         properties.forEach(property -> root.addProperty(property.getName(), property.getStringValue()));
 
-        Files.write(destination, this.gson.toJson(root).getBytes("UTF-8"));
+        Files.write(destination, this.gson.toJson(root).getBytes(StandardCharsets.UTF_8));
     }
 }
