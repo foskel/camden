@@ -33,4 +33,9 @@ public final class JsonPropertyWriter implements PropertyWriter {
 
         Files.write(destination, this.gson.toJson(root).getBytes(StandardCharsets.UTF_8));
     }
+
+    @Override
+    public String getFileExtension() {
+        return "json";
+    }
 }
