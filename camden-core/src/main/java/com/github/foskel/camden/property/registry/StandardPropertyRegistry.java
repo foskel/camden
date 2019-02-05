@@ -1,6 +1,10 @@
 package com.github.foskel.camden.property.registry;
 
 import com.github.foskel.camden.property.Property;
+import com.github.foskel.camden.property.io.PropertyReader;
+import com.github.foskel.camden.property.io.PropertyReaders;
+import com.github.foskel.camden.property.io.PropertyWriter;
+import com.github.foskel.camden.property.io.PropertyWriters;
 import com.github.foskel.camden.property.scan.PropertyScanningStrategy;
 
 import java.util.*;
@@ -11,6 +15,18 @@ import java.util.function.Predicate;
  */
 public final class StandardPropertyRegistry implements PropertyRegistry {
     private final Map<Object, Collection<Property<?>>> properties = new HashMap<>();
+
+    public StandardPropertyRegistry(List<PropertyReader> readers, List<PropertyWriter> writers) {
+        for (PropertyReader reader : readers) {
+            PropertyReaders.register(reader);
+        }
+
+        for (PropertyWriter writer : writers) {
+            PropertyWriters.register(writer);
+        }
+    }
+
+    public StandardPropertyRegistry() {}
 
     @Override
     public boolean registerWith(Object container, PropertyScanningStrategy scanningStrategy) {
@@ -32,7 +48,7 @@ public final class StandardPropertyRegistry implements PropertyRegistry {
 
     @Override
     public boolean unregister(Object container) {
-        Objects.requireNonNull(container, "source");
+        Objects.requireNonNull(container, "container");
 
         if (!this.has(container)) {
             return false;

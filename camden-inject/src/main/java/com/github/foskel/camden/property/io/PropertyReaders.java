@@ -1,20 +1,17 @@
 package com.github.foskel.camden.property.io;
 
-import java.util.HashMap;
+import javax.inject.Inject;
 import java.util.Map;
 
 public final class PropertyReaders {
-    private static final Map<String, PropertyReader> PROPERTY_READERS = new HashMap<>();
+    private final Map<String, PropertyReader> propertyReaders;
 
-    public static void register(PropertyReader reader) {
-        PROPERTY_READERS.put(reader.getFileExtension(), reader);
+    @Inject
+    PropertyReaders(Map<String, PropertyReader> propertyReaders) {
+        this.propertyReaders = propertyReaders;
     }
 
-    public static void unregister(PropertyReader reader) {
-        PROPERTY_READERS.remove(reader.getFileExtension());
-    }
-
-    public static PropertyReader find(String extension) {
-        return PROPERTY_READERS.get(extension);
+    public PropertyReader find(String extension) {
+        return propertyReaders.get(extension);
     }
 }
