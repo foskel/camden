@@ -1,20 +1,23 @@
 package com.github.foskel.camden.property.io;
 
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public final class PropertyWriters {
-    private static final Map<String, PropertyWriter> PROPERTY_WRITERS = new HashMap<>();
+    private final Map<String, PropertyWriter> propertyWriters;
 
-    public static void register(PropertyWriter writer) {
-        PROPERTY_WRITERS.put(writer.getFileExtension(), writer);
+    @Inject
+    PropertyWriters(Set<PropertyWriter> propertyWriters) {
+        this.propertyWriters = new HashMap<>();
+
+        for (PropertyWriter writer : propertyWriters) {
+            this.propertyWriters.put(writer.getFileExtension(), writer);
+        }
     }
 
-    public static void unregister(PropertyWriter writer) {
-        PROPERTY_WRITERS.remove(writer.getFileExtension());
-    }
-
-    public static PropertyWriter find(String extension) {
-        return PROPERTY_WRITERS.get(extension);
+    public PropertyWriter find(String extension) {
+        return propertyWriters.get(extension);
     }
 }
