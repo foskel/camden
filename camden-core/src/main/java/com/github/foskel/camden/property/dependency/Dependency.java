@@ -8,7 +8,7 @@ public final class Dependency<T extends Property<?>> {
     private final T target;
     private final Predicate<T> filter;
 
-    private Dependency(T target, Predicate<T> filter) {
+    public Dependency(T target, Predicate<T> filter) {
         this.target = target;
         this.filter = filter;
     }
