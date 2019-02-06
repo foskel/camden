@@ -1,4 +1,4 @@
-package com.github.foskel.camden.property.annotations;
+package com.github.foskel.camden.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
