@@ -135,8 +135,8 @@ public enum FieldPropertyScanningStrategy implements PropertyScanningStrategy {
             properties.addAll(extractPropertiesOfFields(sourceType, source));
         } else {
             Class<?> superclassType = sourceType;
-
-            for (int i = 0; i < depth && (superclassType = superclassType.getSuperclass()) != null; i++) {
+            
+            for (int i = 1; i < depth && (superclassType = superclassType.getSuperclass()) != null; i++) {
                 if (sourceType.isAnnotationPresent(Propertied.class)) {
                     properties.addAll(extractProperties(sourceType, source));
                 }

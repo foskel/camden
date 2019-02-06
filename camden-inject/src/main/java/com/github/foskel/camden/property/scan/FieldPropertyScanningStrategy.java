@@ -134,7 +134,7 @@ public final class FieldPropertyScanningStrategy implements PropertyScanningStra
         } else {
             Class<?> superclassType = sourceType;
 
-            for (int i = 0; i < depth && (superclassType = superclassType.getSuperclass()) != null; i++) {
+            for (int i = 1; i < depth && (superclassType = superclassType.getSuperclass()) != null; i++) {
                 if (superclassType.isAnnotationPresent(Propertied.class)) {
                     properties.addAll(extractProperties(superclassType, source));
                 }
