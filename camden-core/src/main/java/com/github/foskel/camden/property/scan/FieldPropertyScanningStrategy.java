@@ -2,6 +2,7 @@ package com.github.foskel.camden.property.scan;
 
 import com.github.foskel.camden.annotations.Exclude;
 import com.github.foskel.camden.annotations.Propertied;
+import com.github.foskel.camden.annotations.ScanDepth;
 import com.github.foskel.camden.property.Property;
 
 import java.lang.reflect.Field;
@@ -15,17 +16,19 @@ import java.util.*;
 public enum FieldPropertyScanningStrategy implements PropertyScanningStrategy {
     INSTANCE;
 
-    private static List<Property<?>> extractPropertiesOfFields(Object parentSource) {
-        List<Object> fieldValues = getPropertyFieldsValues(parentSource);
+    private static final int DEFAULT_DEPTH = 1;
+
+    private static List<Property<?>> extractPropertiesOfFields(Class<?> type, Object parentSource) {
+        List<Object> fieldValues = getPropertyFieldsValues(type, parentSource);
         List<Property<?>> properties = extractAllProperties(fieldValues);
 
-        fieldValues.forEach(fieldSource -> properties.addAll(extractPropertiesOfFields(fieldSource)));
+        fieldValues.forEach(fieldSource -> properties.addAll(extractPropertiesOfFields(fieldSource.getClass(), fieldSource)));
 
         return properties;
     }
 
-    private static List<Object> getPropertyFieldsValues(Object source) {
-        Field[] fields = source.getClass().getDeclaredFields();
+    private static List<Object> getPropertyFieldsValues(Class<?> type, Object source) {
+        Field[] fields = type.getDeclaredFields();
         List<Object> propertyFieldsValues = new ArrayList<>();
 
         for (Field declaredField : fields) {
@@ -52,16 +55,16 @@ public enum FieldPropertyScanningStrategy implements PropertyScanningStrategy {
                 continue;
             }
 
-            properties.addAll(extractProperties(source));
+            properties.addAll(extractProperties(source.getClass(), source));
         }
 
         return properties;
     }
 
-    private static List<Property<?>> extractProperties(Object source) {
+    private static List<Property<?>> extractProperties(Class<?> type, Object source) {
         List<Property<?>> properties = new ArrayList<>();
 
-        for (Field field : source.getClass().getDeclaredFields()) {
+        for (Field field : type.getDeclaredFields()) {
             if (!shouldAccept(field)) {
                 continue;
             }
@@ -121,20 +124,40 @@ public enum FieldPropertyScanningStrategy implements PropertyScanningStrategy {
         return false;
     }
 
+    private static void scanRecursive(Object source, Set<Property<?>> properties, int depth) {
+        Class<?> sourceType = source.getClass();
+
+        if (depth == 1) {
+            if (sourceType.isAnnotationPresent(Propertied.class)) {
+                properties.addAll(extractProperties(sourceType, source));
+            }
+
+            properties.addAll(extractPropertiesOfFields(sourceType, source));
+        } else {
+            Class<?> superclassType = sourceType;
+
+            for (int i = 0; i < depth && (superclassType = superclassType.getSuperclass()) != null; i++) {
+                if (sourceType.isAnnotationPresent(Propertied.class)) {
+                    properties.addAll(extractProperties(sourceType, source));
+                }
+
+                properties.addAll(extractPropertiesOfFields(sourceType, source));
+            }
+        }
+    }
+
     @Override
     public Collection<Property<?>> scan(Object source) {
         if (!shouldScan(source)) {
             return Collections.emptyList();
         }
 
-        Class<?> sourceType = source.getClass();
+        ScanDepth scanDepthAnno = source.getClass().getAnnotation(ScanDepth.class);
+        int scanDepth = scanDepthAnno == null ? DEFAULT_DEPTH : scanDepthAnno.value();
+
         Set<Property<?>> properties = new HashSet<>();
 
-        if (sourceType.isAnnotationPresent(Propertied.class)) {
-            properties.addAll(extractProperties(source));
-        }
-
-        properties.addAll(extractPropertiesOfFields(source));
+        scanRecursive(source, properties, scanDepth);
 
         return Collections.unmodifiableSet(properties);
     }
