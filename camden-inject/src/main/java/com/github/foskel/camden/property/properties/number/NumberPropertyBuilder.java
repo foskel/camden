@@ -14,32 +14,40 @@ import java.util.Set;
 public final class NumberPropertyBuilder<T extends Number & Comparable<T>> {
     private final Set<ValueChangeListener<T>> valueChangeListeners = new HashSet<>();
     private final String propertyName;
-    private final T minimumValue;
-    private final T maximalValue;
+    private T minimumValue;
+    private T maximalValue;
     private Dependency<?> dependency;
     private T defaultValue;
 
-    public NumberPropertyBuilder(String propertyName,
-                                 T minimumValue,
-                                 T maximalValue) {
+    public NumberPropertyBuilder(String propertyName) {
         this.propertyName = propertyName;
-        this.minimumValue = minimumValue;
-        this.maximalValue = maximalValue;
     }
 
-    public NumberPropertyBuilder<T> withDefaultValue(T defaultValue) {
+    public NumberPropertyBuilder<T> defaultValue(T defaultValue) {
         this.defaultValue = defaultValue;
 
         return this;
     }
 
-    public NumberPropertyBuilder<T> withListener(ValueChangeListener<T> listener) {
+    public NumberPropertyBuilder<T> minValue(T minimumValue) {
+        this.minimumValue = minimumValue;
+
+        return this;
+    }
+
+    public NumberPropertyBuilder<T> maxValue(T maximalValue) {
+        this.maximalValue = maximalValue;
+
+        return this;
+    }
+
+    public NumberPropertyBuilder<T> listener(ValueChangeListener<T> listener) {
         this.valueChangeListeners.add(listener);
 
         return this;
     }
 
-    public NumberPropertyBuilder<T> withDependency(Dependency<?> dependency) {
+    public NumberPropertyBuilder<T> dependency(Dependency<?> dependency) {
         this.dependency = dependency;
 
         return this;
@@ -47,6 +55,8 @@ public final class NumberPropertyBuilder<T extends Number & Comparable<T>> {
 
     public NumberProperty<T> build() {
         Objects.requireNonNull(this.defaultValue, "defaultValue");
+        Objects.requireNonNull(this.minimumValue, "minimumValue");
+        Objects.requireNonNull(this.maximalValue, "maximalValue");
 
         NumberProperty<T> result = new NumberProperty<>(
                 this.propertyName,

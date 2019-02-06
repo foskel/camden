@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 public final class SelectableProperty<T> extends SimpleProperty<T> {
     private final Set<T> options;
@@ -33,9 +32,19 @@ public final class SelectableProperty<T> extends SimpleProperty<T> {
 
     @Override
     public boolean setValueParsingInput(String input) {
-        return this.options.stream()
+        for (T option : options) {
+            if (this.filterByMatchType(option, input, this.matchType)) {
+                if (!this.setValue(option)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+
+        /*return this.options.stream()
                 .filter(this.filterByMatchType(input, this.matchType))
-                .anyMatch(this::setValue);
+                .anyMatch(this::setValue);*/
     }
 
     public boolean registerOption(T option) {
@@ -47,9 +56,17 @@ public final class SelectableProperty<T> extends SimpleProperty<T> {
     }
 
     public Optional<T> find(String optionName) {
-        return this.options.stream()
+        for (T option : options) {
+            if (this.filterByMatchType(option, optionName, InputMatchType.EQUALS)) {
+                return Optional.of(option);
+            }
+        }
+
+        return Optional.empty();
+
+        /*return this.options.stream()
                 .filter(this.filterByMatchType(optionName, InputMatchType.EQUALS))
-                .findFirst();
+                .findFirst();*/
     }
 
     public Set<T> findAllOptions() {
@@ -60,18 +77,18 @@ public final class SelectableProperty<T> extends SimpleProperty<T> {
         this.options.clear();
     }
 
-    private Predicate<T> filterByMatchType(String input, InputMatchType matchType) {
+    private boolean filterByMatchType(T option, String input, InputMatchType matchType) {
         switch (matchType) {
             case EQUALS:
-                return option -> this.getName(option).equals(input);
+                return this.getName(option).equals(input);
             case EQUALS_CASE_INSENSITIVE:
-                return option -> this.getName(option).equalsIgnoreCase(input);
+                return this.getName(option).equalsIgnoreCase(input);
             case STARTS_WITH_CASE_SENSITIVE:
-                return option -> this.getName(option).startsWith(input);
+                return this.getName(option).startsWith(input);
             case STARTS_WITH:
-                return option -> Strings.startsWithIgnoreCase(this.getName(option), input);
+                return Strings.startsWithIgnoreCase(this.getName(option), input);
             default:
-                return option -> false;
+                return false;
         }
     }
 

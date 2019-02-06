@@ -50,14 +50,22 @@ public final class SelectablePropertyBuilder<T> {
 
         Objects.requireNonNull(name, "name");
 
-        T foundOption = this.options.stream()
+        for (T option : options) {
+            if (this.nameSupplier.apply(option).equals(name)) {
+                return this.defaultOption(option);
+            }
+        }
+
+        throw new NoSuchElementException("Unable to set default option. No options matching \"" + name + "\"");
+
+        /*T foundOption = this.options.stream()
                 .filter(option -> this.nameSupplier.apply(option).equals(name))
                 .findAny()
                 .orElseThrow(() -> new NoSuchElementException("Unable to set default option. No options " +
                         "matching " +
-                        "\"" + name + "\""));
+                        "\"" + name + "\""));*/
 
-        return this.defaultOption(foundOption);
+        //return this.defaultOption(foundOption);
     }
 
     public SelectablePropertyBuilder<T> defaultOption(T defaultValue) {

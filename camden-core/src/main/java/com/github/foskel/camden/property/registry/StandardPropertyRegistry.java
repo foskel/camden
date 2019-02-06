@@ -26,7 +26,8 @@ public final class StandardPropertyRegistry implements PropertyRegistry {
         }
     }
 
-    public StandardPropertyRegistry() {}
+    public StandardPropertyRegistry() {
+    }
 
     @Override
     public boolean registerWith(Object container, PropertyScanningStrategy scanningStrategy) {

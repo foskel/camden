@@ -10,7 +10,7 @@ public final class EnumProperty<T extends Enum<T>> extends SimpleProperty<T> {
     public EnumProperty(String name, T initialValue) {
         super(name, initialValue);
     }
-
+    
     @Override
     @SuppressWarnings("unchecked")
     public boolean setValueParsingInput(String input) {

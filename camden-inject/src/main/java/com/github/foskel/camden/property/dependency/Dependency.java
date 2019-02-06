@@ -13,7 +13,7 @@ public final class Dependency<T extends Property<?>> {
         this.filter = filter;
     }
 
-    public Property<?> getTarget() {
+    public T getTarget() {
         return this.target;
     }
 

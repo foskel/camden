@@ -9,7 +9,6 @@ import com.github.foskel.camden.property.scan.PropertyScanningStrategy;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.Multibinder;
-import com.google.inject.name.Names;
 
 import java.util.Collections;
 import java.util.List;

@@ -19,6 +19,10 @@ public final class NumberProperty<T extends Number & Comparable<T>> extends Simp
         this.maximalValue = maximalValue;
     }
 
+    public static <OT extends Number & Comparable<OT>> NumberProperty<OT> create(String name, OT value, OT minimumValue, OT maximalValue) {
+        return new NumberProperty<>(name, value, minimumValue, maximalValue);
+    }
+
     public T getMinimumValue() {
         return this.minimumValue;
     }
