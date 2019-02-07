@@ -1,6 +1,7 @@
 package com.github.foskel.camden.property.properties.number;
 
 import com.github.foskel.camden.property.dependency.Dependency;
+import com.github.foskel.camden.property.properties.BooleanProperty;
 import com.github.foskel.camden.value.ValueChangeListener;
 
 import java.util.HashSet;
