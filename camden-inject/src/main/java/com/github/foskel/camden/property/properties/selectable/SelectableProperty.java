@@ -27,7 +27,7 @@ public final class SelectableProperty<T> extends SimpleProperty<T> {
 
     @Override
     public String getStringValue() {
-        return this.getName(this.value);
+        return this.getNameOf(this.value);
     }
 
     @Override
@@ -80,19 +80,19 @@ public final class SelectableProperty<T> extends SimpleProperty<T> {
     private boolean filterByMatchType(T option, String input, InputMatchType matchType) {
         switch (matchType) {
             case EQUALS:
-                return this.getName(option).equals(input);
+                return this.getNameOf(option).equals(input);
             case EQUALS_CASE_INSENSITIVE:
-                return this.getName(option).equalsIgnoreCase(input);
+                return this.getNameOf(option).equalsIgnoreCase(input);
             case STARTS_WITH_CASE_SENSITIVE:
-                return this.getName(option).startsWith(input);
+                return this.getNameOf(option).startsWith(input);
             case STARTS_WITH:
-                return Strings.startsWithIgnoreCase(this.getName(option), input);
+                return Strings.startsWithIgnoreCase(this.getNameOf(option), input);
             default:
                 return false;
         }
     }
 
-    private String getName(T option) {
+    public String getNameOf(T option) {
         return this.nameSupplier.apply(option);
     }
 }
