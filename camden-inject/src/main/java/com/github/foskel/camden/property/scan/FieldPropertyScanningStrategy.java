@@ -16,18 +16,16 @@ import java.util.*;
 public final class FieldPropertyScanningStrategy implements PropertyScanningStrategy {
     private static final int DEFAULT_DEPTH = 1;
 
-    private static List<Property<?>> extractPropertiesOfFields(Class<?> type, Object parentSource) {
-        List<Object> fieldValues = getPropertyFieldsValues(type, parentSource);
-        List<Property<?>> properties = extractAllProperties(fieldValues);
+    private static void extractPropertiesOfFields(Class<?> type, Object parentSource, Set<Property<?>> properties) {
+        // extract all fields annotated with @Propertied
+        List<PropertyFieldData> fieldDatas = getPropertyFields(type, parentSource);
 
-        fieldValues.forEach(fieldSource -> properties.addAll(extractPropertiesOfFields(fieldSource.getClass(), fieldSource)));
-
-        return properties;
+        extractAllProperties(fieldDatas, properties);
     }
 
-    private static List<Object> getPropertyFieldsValues(Class<?> type, Object source) {
+    private static List<PropertyFieldData> getPropertyFields(Class<?> type, Object source) {
         Field[] fields = type.getDeclaredFields();
-        List<Object> propertyFieldsValues = new ArrayList<>();
+        List<PropertyFieldData> result = new ArrayList<>();
 
         for (Field declaredField : fields) {
             if (declaredField.isAnnotationPresent(Propertied.class)) {
@@ -35,44 +33,38 @@ public final class FieldPropertyScanningStrategy implements PropertyScanningStra
 
                 Object value = getValueOf(declaredField, source);
 
-                propertyFieldsValues.add(value);
+                result.add(new PropertyFieldData(value, declaredField.getAnnotation(ScanDepth.class)));
             }
         }
 
-        return propertyFieldsValues;
+        return result;
     }
 
-    @SuppressWarnings("unchecked")
-    private static List<Property<?>> extractAllProperties(Collection<Object> sources) {
-        List<Property<?>> properties = new ArrayList<>();
+    private static void extractAllProperties(Collection<PropertyFieldData> sources, Set<Property<?>> properties) {
+        for (PropertyFieldData data : sources) {
+            Object source = data.value;
 
-        for (Object source : sources) {
             if (source instanceof Collection) {
-                properties.addAll(extractAllProperties((Collection<Object>) source));
+                for (Object sourceElement : (Collection) source) {
+                    sources.add(new PropertyFieldData(sourceElement, sourceElement.getClass().getAnnotation(ScanDepth.class)));
+                }
 
                 continue;
             }
 
-            properties.addAll(extractProperties(source.getClass(), source));
+            scanRecursive(source, properties, data.depthAnno);
         }
-
-        return properties;
     }
 
-    private static List<Property<?>> extractProperties(Class<?> type, Object source) {
-        List<Property<?>> properties = new ArrayList<>();
-
+    private static void extractProperties(Class<?> type, Object source, Set<Property<?>> properties) {
         for (Field field : type.getDeclaredFields()) {
             if (!shouldAccept(field)) {
                 continue;
             }
 
             ensureAccess(field);
-
             properties.add(getPropertyFrom(field, source));
         }
-
-        return properties;
     }
 
     private static Property getPropertyFrom(Field field, Object source) {
@@ -122,24 +114,26 @@ public final class FieldPropertyScanningStrategy implements PropertyScanningStra
         return false;
     }
 
-    private static void scanRecursive(Object source, Set<Property<?>> properties, int depth) {
+    private static void scanRecursive(Object source, Set<Property<?>> properties, ScanDepth depthAnno) {
+        int depth = depthAnno == null ? DEFAULT_DEPTH : depthAnno.value();
         Class<?> sourceType = source.getClass();
 
         if (depth == 1) {
             if (sourceType.isAnnotationPresent(Propertied.class)) {
-                properties.addAll(extractProperties(sourceType, source));
+                extractProperties(sourceType, source, properties);
+                // extract all fields extending Property.class
             }
 
-            properties.addAll(extractPropertiesOfFields(sourceType, source));
+            extractPropertiesOfFields(sourceType, source, properties);
         } else {
             Class<?> superclassType = sourceType;
 
             for (int i = 1; i < depth && (superclassType = superclassType.getSuperclass()) != null; i++) {
-                if (superclassType.isAnnotationPresent(Propertied.class)) {
-                    properties.addAll(extractProperties(superclassType, source));
+                if (sourceType.isAnnotationPresent(Propertied.class)) {
+                    extractProperties(sourceType, source, properties);
                 }
 
-                properties.addAll(extractPropertiesOfFields(superclassType, source));
+                extractPropertiesOfFields(sourceType, source, properties);
             }
         }
     }
@@ -150,13 +144,20 @@ public final class FieldPropertyScanningStrategy implements PropertyScanningStra
             return Collections.emptyList();
         }
 
-        ScanDepth scanDepthAnno = source.getClass().getAnnotation(ScanDepth.class);
-        int scanDepth = scanDepthAnno == null ? DEFAULT_DEPTH : scanDepthAnno.value();
-
         Set<Property<?>> properties = new HashSet<>();
 
-        scanRecursive(source, properties, scanDepth);
+        scanRecursive(source, properties, source.getClass().getAnnotation(ScanDepth.class));
 
         return Collections.unmodifiableSet(properties);
+    }
+
+    private static class PropertyFieldData {
+        final Object value;
+        final ScanDepth depthAnno;
+
+        private PropertyFieldData(Object value, ScanDepth depthAnno) {
+            this.value = value;
+            this.depthAnno = depthAnno;
+        }
     }
 }
