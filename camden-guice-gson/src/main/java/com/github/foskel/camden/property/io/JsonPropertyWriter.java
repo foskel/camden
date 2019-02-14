@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 
 public final class JsonPropertyWriter implements PropertyWriter {
@@ -31,7 +32,7 @@ public final class JsonPropertyWriter implements PropertyWriter {
 
         properties.forEach(property -> root.addProperty(property.getName(), property.getStringValue()));
 
-        Files.write(destination, this.gson.toJson(root).getBytes(StandardCharsets.UTF_8));
+        Files.write(destination, this.gson.toJson(root).getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
     }
 
     @Override
