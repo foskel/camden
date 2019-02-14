@@ -41,9 +41,10 @@ public enum FieldPropertyScanningStrategy implements PropertyScanningStrategy {
 
         return result;
     }
-    
-    private static void extractAllProperties(Collection<PropertyFieldData> sources, Set<Property<?>> properties) {
-        for (PropertyFieldData data : sources) {
+
+    private static void extractAllProperties(List<PropertyFieldData> sources, Set<Property<?>> properties) {
+        for (int i = 0; i < sources.size(); i++) {
+            PropertyFieldData data = sources.get(i);
             Object source = data.value;
 
             if (source instanceof Collection) {
@@ -54,7 +55,7 @@ public enum FieldPropertyScanningStrategy implements PropertyScanningStrategy {
                 continue;
             }
 
-            scanRecursive(source, properties, data.depthAnno);
+            scanRecursive(source, properties, data.scanDepth, true);
         }
     }
 
@@ -116,28 +117,26 @@ public enum FieldPropertyScanningStrategy implements PropertyScanningStrategy {
         return false;
     }
 
-    private static void scanRecursive(Object source, Set<Property<?>> properties, ScanDepth depthAnno) {
-        int depth = depthAnno == null ? DEFAULT_DEPTH : depthAnno.value();
+    private static void scanRecursive(Object source, Set<Property<?>> properties, int depth, boolean force) {
         Class<?> sourceType = source.getClass();
 
         if (depth == 1) {
-            if (sourceType.isAnnotationPresent(Propertied.class)) {
-                extractProperties(sourceType, source, properties);
-                // extract all fields extending Property.class
-            }
-
-            extractPropertiesOfFields(sourceType, source, properties);
+            scan(source, sourceType, force, properties);
         } else {
             Class<?> superclassType = sourceType;
 
             for (int i = 1; i < depth && (superclassType = superclassType.getSuperclass()) != null; i++) {
-                if (sourceType.isAnnotationPresent(Propertied.class)) {
-                    extractProperties(sourceType, source, properties);
-                }
-
-                extractPropertiesOfFields(sourceType, source, properties);
+                scan(source, superclassType, force, properties);
             }
         }
+    }
+
+    private static void scan(Object source, Class<?> sourceType, boolean force, Set<Property<?>> properties) {
+        if (force || sourceType.isAnnotationPresent(Propertied.class)) {
+            extractProperties(sourceType, source, properties);
+        }
+
+        extractPropertiesOfFields(sourceType, source, properties);
     }
 
     @Override
@@ -148,18 +147,23 @@ public enum FieldPropertyScanningStrategy implements PropertyScanningStrategy {
 
         Set<Property<?>> properties = new HashSet<>();
 
-        scanRecursive(source, properties, source.getClass().getAnnotation(ScanDepth.class));
+        scanRecursive(source, properties, getScanDepth(
+                source.getClass().getAnnotation(ScanDepth.class)), false);
 
         return Collections.unmodifiableSet(properties);
     }
 
+    private static int getScanDepth(ScanDepth anno) {
+        return anno == null ? DEFAULT_DEPTH : anno.value();
+    }
+
     private static class PropertyFieldData {
         final Object value;
-        final ScanDepth depthAnno;
+        final int scanDepth;
 
         private PropertyFieldData(Object value, ScanDepth depthAnno) {
             this.value = value;
-            this.depthAnno = depthAnno;
+            this.scanDepth = getScanDepth(depthAnno);
         }
     }
 }
