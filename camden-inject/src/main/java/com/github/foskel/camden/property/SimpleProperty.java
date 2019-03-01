@@ -38,10 +38,8 @@ public class SimpleProperty<T> implements Property<T> {
 
         this.value = value;
 
-        while (!this.valueChangeListeners.isEmpty()) {
-            ValueChangeListener<T> valueChangeListener = this.valueChangeListeners.poll();
-
-            valueChangeListener.accept(oldValue, this.value);
+        for (ValueChangeListener<T> changeListener : this.valueChangeListeners) {
+            changeListener.accept(oldValue, this.value);
         }
 
         return true;

@@ -32,7 +32,8 @@ public final class JsonPropertyWriter implements PropertyWriter {
 
         properties.forEach(property -> root.addProperty(property.getName(), property.getStringValue()));
 
-        Files.write(destination, this.gson.toJson(root).getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+        Files.write(destination, this.gson.toJson(root).getBytes(StandardCharsets.UTF_8),
+                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
     @Override
