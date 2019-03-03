@@ -53,7 +53,7 @@ public final class FieldPropertyScanningStrategy implements PropertyScanningStra
                 continue;
             }
 
-            scanRecursive(source, properties, data.scanDepth, true);
+            scanRecursive(source, properties, data.scanDepth, false);
         }
     }
 
@@ -118,12 +118,12 @@ public final class FieldPropertyScanningStrategy implements PropertyScanningStra
     private static void scanRecursive(Object source, Set<Property<?>> properties, int depth, boolean force) {
         Class<?> sourceType = source.getClass();
 
-        if (depth == 1) {
-            scan(source, sourceType, force, properties);
-        } else {
-            Class<?> superclassType = sourceType;
+        scan(source, sourceType, force, properties);
 
-            for (int i = 1; i < depth && (superclassType = superclassType.getSuperclass()) != null; i++) {
+        Class<?> superclassType = sourceType;
+
+        if (depth > 1) {
+            for (int i = 1; i < depth && (superclassType = superclassType.getSuperclass()) != Object.class; i++) {
                 scan(source, superclassType, force, properties);
             }
         }
