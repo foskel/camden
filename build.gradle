@@ -1,5 +1,5 @@
 subprojects {
-    group 'com.github.foskel.camden'
+    group 'com.github.idkp.camden'
     version '0.1.0-RELEASE'
 
     apply plugin: 'java'
